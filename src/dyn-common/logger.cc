@@ -1,0 +1,3 @@
+void dyn_log (){
+	
+}

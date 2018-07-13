@@ -46,15 +46,28 @@ message(STATUS "NOTE: Build configuration: " ${CMAKE_BUILD_TYPE})
 
 
 include_directories ("${PROJECT_SOURCE_DIR}/src/common")
+include_directories ("${PROJECT_SOURCE_DIR}/src/dyn-common")
 add_subdirectory ("${PROJECT_SOURCE_DIR}/src/common") 
+add_subdirectory ("${PROJECT_SOURCE_DIR}/src/dyn-common") 
 
-add_subdirectory("${PROJECT_SOURCE_DIR}/external/googletest")
+#add_subdirectory("${PROJECT_SOURCE_DIR}/external/googletest")
+
+## TODO make overideable from LCI
+SET(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/tmp)
+
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 ## build
 add_executable(main src/main.cc)
-target_link_libraries (main common gtest)
+target_link_libraries (main common dyn-common)
 
 
 
 ## post-build (install)
-install (TARGETS main DESTINATION ${PROJECT_BINARY_DIR}/bin)
+
+install (TARGETS main DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install (TARGETS dyn-common DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
