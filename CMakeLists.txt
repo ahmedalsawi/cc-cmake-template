@@ -48,9 +48,12 @@ message(STATUS "NOTE: Build configuration: " ${CMAKE_BUILD_TYPE})
 include_directories ("${PROJECT_SOURCE_DIR}/src/common")
 add_subdirectory ("${PROJECT_SOURCE_DIR}/src/common") 
 
+add_subdirectory("${PROJECT_SOURCE_DIR}/external/googletest")
+
 ## build
 add_executable(main src/main.cc)
-target_link_libraries (main common)
+target_link_libraries (main common gtest)
+
 
 
 ## post-build (install)
