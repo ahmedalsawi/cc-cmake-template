@@ -1,26 +1,14 @@
 ## Configuration
 cmake_minimum_required (VERSION 2.6)
-project (cc-proj CXX C)
+set(PROJECT_NAME cc-proj)
+project (${PROJECT_NAME} CXX C)
 
 set (CMAKE_VERSION_MAJOR 1)
 set (CMAKE_VERSION_MINOR 0)
 
-## from http://xit0.org/2013/04/cmake-use-git-branch-and-commit-details-in-project/
-## install cmake module
-execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_BRANCH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+LIST(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-# Get the latest abbreviated commit hash of the working branch
-execute_process(
-  COMMAND git log -1 --format=%h
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_HASH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+include(git) 
 
 ## prebuild
 configure_file (
@@ -52,22 +40,22 @@ add_subdirectory ("${PROJECT_SOURCE_DIR}/src/dyn-common")
 
 #add_subdirectory("${PROJECT_SOURCE_DIR}/external/googletest")
 
-## TODO make overideable from LCI
-SET(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/tmp)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set (CMAKE_INSTALL_PREFIX "${PROJECT_BINARY_DIR}/${PROJECT_NAME}" CACHE PATH "default install path" FORCE )
+endif()
+message(STATUS "NOTE: Install Path: " ${CMAKE_INSTALL_PREFIX}) 
 
+## Add support for shared libraries in install path
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 ## build
 add_executable(main src/main.cc)
 target_link_libraries (main common dyn-common)
 
 
-
 ## post-build (install)
-
 install (TARGETS main DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 install (TARGETS dyn-common DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
